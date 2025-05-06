@@ -5,7 +5,16 @@ function mmdc(input::String, err_io::IO, io::IO, mime::MIME"text/svg")
     err_pipe = Pipe()
     redirect_stderr(err_pipe)
 
-    mmdc_cmd::Cmd = `mmdc --input -  --output -  --outputFormat svg`
+    mmdc_args = [
+        "--input", "-",
+        "--output", "-",
+        "--outputFormat", "svg",
+    ]
+    if haskey(ENV, "CI")
+        puppeteerConfigFile = normpath(@__DIR__, "puppeteer-config.json")
+        push!(mmdc_args, "--puppeteerConfigFile", puppeteerConfigFile)
+    end
+    mmdc_cmd::Cmd = Cmd(["mmdc", mmdc_args...])
     pipe::IO = open(mmdc_cmd, "r+")
     t::Task = @async begin
         write(pipe, input)
@@ -21,7 +30,7 @@ function mmdc(input::String, err_io::IO, io::IO, mime::MIME"text/svg")
     redirect_stderr(oldstderr)
     close(err_pipe.in)
 
-    write(err_io, read(err_pipe, String))
+    write(err_io, read(err_pipe.out, String))
     close(err_pipe.out)
 end
 
