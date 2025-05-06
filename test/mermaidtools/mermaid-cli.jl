@@ -17,6 +17,10 @@ expr = :( mmdc(input, "svg") )
 output = @time string(expr) Core.eval(@__MODULE__, expr)
 @test startswith(output, """<svg aria-roledescription="timeline" """)
 
+expr = :( mmdc(input, "svg") )
+output = @time string(expr) Core.eval(@__MODULE__, expr)
+@test startswith(output, """<svg aria-roledescription="timeline" """)
+
 expr = :( mmdc(input, "png") )
 output = @time string(expr) Core.eval(@__MODULE__, expr)
 @test output[1:5] == [0x89, 0x50, 0x4e, 0x47, 0x0d]
