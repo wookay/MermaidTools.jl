@@ -1,7 +1,7 @@
 # module MermaidTools
 
 function mmdc(input::String, err_io::IO, io::IO, mime::MIME"text/svg")
-    oldstderr::Base.TTY = stderr
+    oldstderr = stderr
     err_pipe = Pipe()
     redirect_stderr(err_pipe)
 
