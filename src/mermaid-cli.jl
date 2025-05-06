@@ -1,6 +1,6 @@
 # module MermaidTools
 
-function mmdc(input::String, err_io::IO, io::IO, mime::MIME"text/svg")
+function mmdc(input::String, err_io::IO, io::IO, outputFormat::String)
     oldstderr = stderr
     err_pipe = Pipe()
     redirect_stderr(err_pipe)
@@ -8,7 +8,7 @@ function mmdc(input::String, err_io::IO, io::IO, mime::MIME"text/svg")
     mmdc_args = [
         "--input", "-",
         "--output", "-",
-        "--outputFormat", "svg",
+        "--outputFormat", outputFormat,
     ]
     if haskey(ENV, "CI")
         puppeteerConfigFile = normpath(@__DIR__, "puppeteer-config.json")
@@ -34,14 +34,20 @@ function mmdc(input::String, err_io::IO, io::IO, mime::MIME"text/svg")
     close(err_pipe.out)
 end
 
-function mmdc(input::String; err_io::IO = stderr)::Union{Nothing, String}
+function mmdc(input::String, outputFormat::String; err_io::IO = stderr)::Union{Nothing, String, Vector{UInt8}}
     output = nothing
     try
         success(`mmdc --version`)
         io = IOBuffer()
-        mmdc(input, err_io, io, MIME"text/svg"())
+        if outputFormat == "svg"
+            mmdc(input, err_io, io, outputFormat)
+            return_type = String
+        else # png pdf
+            mmdc(input, err_io, io, outputFormat)
+            return_type = Vector{UInt8}
+        end
         seekstart(io)
-        output = read(io, String)
+        output = return_type(take!(io))
     catch ex
         @error ex
     end
