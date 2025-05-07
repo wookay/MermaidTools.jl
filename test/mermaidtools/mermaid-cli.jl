@@ -3,7 +3,7 @@ module test_mermaidtools_mermaidcli
 using Test
 using MermaidTools
 
-input = """
+timeline = """
 timeline
 title History of Social Media Platform
 2002 : LinkedIn
@@ -15,7 +15,7 @@ title History of Social Media Platform
 
 ### svg
 
-expr = :( mmdc(input, "svg") )
+expr = :( mmdc(timeline, "svg") )
 
 # 1st run
 file = @time string(expr) Core.eval(@__MODULE__, expr)
@@ -32,7 +32,7 @@ using Jive # sprint_html
 
 ### png
 
-png_expr = :( mmdc(input, "png") )
+png_expr = :( mmdc(timeline, "png") )
 png_file = @time string(png_expr) Core.eval(@__MODULE__, png_expr)
 @test png_file.format == MIME("image/png")
 @test png_file.body[1:5] == [0x89, 0x50, 0x4e, 0x47, 0x0d]
@@ -46,7 +46,7 @@ history_png_data = @time "read(\"history.png\")" Core.eval(@__MODULE__, read_png
 
 ### pdf
 
-pdf_expr = :( mmdc(input, "pdf") )
+pdf_expr = :( mmdc(timeline, "pdf") )
 pdf_file = @time string(pdf_expr) Core.eval(@__MODULE__, pdf_expr)
 @test pdf_file.format == MIME("application/pdf")
 
