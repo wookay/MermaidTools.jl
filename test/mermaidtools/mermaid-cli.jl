@@ -51,7 +51,7 @@ pdf_file = @time string(pdf_expr) Core.eval(@__MODULE__, pdf_expr)
 @test pdf_file.format == MIME("application/pdf")
 
 history_pdf_filename = normpath(@__DIR__, "history.pdf")
-write(history_pdf_filename, pdf_file.body)
+# write(history_pdf_filename, pdf_file.body)
 
 read_pdf_expr = :( read(history_pdf_filename) )
 history_pdf_data = @time "read(\"history.pdf\")" Core.eval(@__MODULE__, read_pdf_expr)
