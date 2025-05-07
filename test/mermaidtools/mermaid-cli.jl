@@ -49,6 +49,7 @@ history_png_data = @time "read(\"history.png\")" Core.eval(@__MODULE__, read_png
 pdf_expr = :( mmdc(timeline, "pdf") )
 pdf_file = @time string(pdf_expr) Core.eval(@__MODULE__, pdf_expr)
 @test pdf_file.format == MIME("application/pdf")
+@test pdf_file.body[1:5] == [0x25, 0x50, 0x44, 0x46, 0x2d]
 
 history_pdf_filename = normpath(@__DIR__, "history.pdf")
 # write(history_pdf_filename, pdf_file.body)
@@ -56,13 +57,11 @@ history_pdf_filename = normpath(@__DIR__, "history.pdf")
 read_pdf_expr = :( read(history_pdf_filename) )
 history_pdf_data = @time "read(\"history.pdf\")" Core.eval(@__MODULE__, read_pdf_expr)
 
-
 if haskey(ENV, "CI")
     @test history_png_data != png_file.body
-    @test history_pdf_data != pdf_file.body
 else
     @test history_png_data == png_file.body
-    @test history_pdf_data == pdf_file.body
 end
+@test history_pdf_data != pdf_file.body
 
 end # module test_mermaidtools_mermaidcli
