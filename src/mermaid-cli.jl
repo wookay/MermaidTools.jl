@@ -34,24 +34,23 @@ function mmdc(input::String, err_io::IO, io::IO, outputFormat::String)
     close(err_pipe.out)
 end
 
-function mmdc(input::String, outputFormat::String; err_io::IO = stderr)::Union{Nothing, String, Vector{UInt8}}
-    output = nothing
+function mmdc(input::String, outputFormat::String; err_io::IO = stderr)::Union{Nothing, MermaidFile}
     try
         success(`mmdc --version`)
-        io = IOBuffer()
-        if outputFormat == "svg"
-            mmdc(input, err_io, io, outputFormat)
-            return_type = String
-        else # png pdf
-            mmdc(input, err_io, io, outputFormat)
-            return_type = Vector{UInt8}
-        end
-        seekstart(io)
-        output = return_type(take!(io))
     catch ex
         @error ex
+        return nothing
     end
-    output
+    io = IOBuffer()
+    mmdc(input, err_io, io, outputFormat)
+    if outputFormat == "png"
+        format = MIME("image/png")
+    elseif outputFormat == "pdf"
+        format = MIME("application/pdf")
+    else
+        format = MIME("text/svg")
+    end
+    return MermaidFile(take!(io), format)
 end
 
 # module MermaidTools
