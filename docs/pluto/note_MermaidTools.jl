@@ -27,13 +27,22 @@ title History of Social Media Platform
 """
 
 # ╔═╡ 6cdf3502-5b53-45b8-a441-3914b7f37ec8
-mmdc(timeline, "svg")
+mmdc(timeline, outputFormat = "svg")
 
 # ╔═╡ 2dcbbd1a-5421-4ed4-92af-c660e4775a54
-mmdc(timeline, "png")
+mmdc(timeline, outputFormat = "png")
 
 # ╔═╡ f95198b7-8d66-4f1b-89b3-925ca8b12eb9
-mmdc(timeline, "pdf")
+mmdc(timeline, outputFormat = "pdf")
+
+# ╔═╡ 6add39d6-7414-461d-875d-63da189bdcee
+mmdc(timeline, outputFormat = "svg", theme = "forest")
+
+# ╔═╡ 28f1f3e1-9286-41f5-af39-da5ce8a62624
+mmdc(timeline, outputFormat = "svg", theme = "dark")
+
+# ╔═╡ e70007a0-3944-4ff8-9061-b237e4ceb009
+mmdc(timeline, outputFormat = "svg", theme = "neutral")
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -200,5 +209,8 @@ version = "1.11.0"
 # ╠═6cdf3502-5b53-45b8-a441-3914b7f37ec8
 # ╠═2dcbbd1a-5421-4ed4-92af-c660e4775a54
 # ╠═f95198b7-8d66-4f1b-89b3-925ca8b12eb9
+# ╠═6add39d6-7414-461d-875d-63da189bdcee
+# ╠═28f1f3e1-9286-41f5-af39-da5ce8a62624
+# ╠═e70007a0-3944-4ff8-9061-b237e4ceb009
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

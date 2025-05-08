@@ -1,6 +1,11 @@
 # module MermaidTools
 
-function mmdc(input::String, err_io::IO, io::IO, outputFormat::String)
+function mmdc(io::IO, input::String, outputFormat::String,
+                                     theme::String,
+                                     width::Int,
+                                     height::Int,
+                                     svgId::String,
+                                     err_io::IO)
     oldstderr = stderr
     err_pipe = Pipe()
     redirect_stderr(err_pipe)
@@ -9,6 +14,10 @@ function mmdc(input::String, err_io::IO, io::IO, outputFormat::String)
         "--input", "-",
         "--output", "-",
         "--outputFormat", outputFormat,
+        "--theme", theme,
+        "--width", string(width),
+        "--height", string(height),
+        "--svgId", svgId,
     ]
     if haskey(ENV, "CI")
         puppeteerConfigFile = normpath(@__DIR__, "puppeteer-config.json")
@@ -34,7 +43,12 @@ function mmdc(input::String, err_io::IO, io::IO, outputFormat::String)
     close(err_pipe.out)
 end
 
-function mmdc(input::String, outputFormat::String; err_io::IO = stderr)::Union{Nothing, MermaidFile}
+function mmdc(input::String; outputFormat::String = "svg",
+                             theme::String = "default",
+                             width::Int = 800,
+                             height::Int = 600,
+                             svgId::String = string("svg-", hash(rand())),
+                             err_io::IO = stderr)::Union{Nothing, MermaidFile}
     try
         success(`mmdc --version`)
     catch ex
@@ -42,7 +56,7 @@ function mmdc(input::String, outputFormat::String; err_io::IO = stderr)::Union{N
         return nothing
     end
     io = IOBuffer()
-    mmdc(input, err_io, io, outputFormat)
+    mmdc(io, input, outputFormat, theme, width, height, svgId, err_io)
     if outputFormat == "png"
         format = MIME("image/png")
     elseif outputFormat == "pdf"
