@@ -15,19 +15,19 @@ title History of Social Media Platform
 
 ### svg
 
-expr = :( mmdc(timeline, outputFormat = "svg") )
+svg_expr = :( mmdc(timeline, outputFormat = "svg") )
 
 # 1st run
-file = @time string(expr) Core.eval(@__MODULE__, expr)
+svg_file = @time string(svg_expr) Core.eval(@__MODULE__, svg_expr)
 
 # 2nd run
-file = @time string(expr) Core.eval(@__MODULE__, expr)
+svg_file = @time string(svg_expr) Core.eval(@__MODULE__, svg_expr)
 
-@test file.format == MIME("text/svg")
-@test String(file.body[1:37]) == """<svg aria-roledescription="timeline" """
+@test svg_file.format == MIME("text/svg")
+@test String(svg_file.body[1:37]) == """<svg aria-roledescription="timeline" """
 
 using Jive # sprint_html
-@test sprint_html(file)[1:37] == """<svg aria-roledescription="timeline" """
+@test sprint_html(svg_file)[1:37] == """<svg aria-roledescription="timeline" """
 
 
 ### png

@@ -2,9 +2,13 @@
 
 function mmdc(io::IO, input::String, outputFormat::String,
                                      theme::String,
+                                     backgroundColor::String,
                                      width::Int,
                                      height::Int,
                                      svgId::String,
+                                     puppeteerConfigFile::Union{Nothing, String},
+                                     configFile::Union{Nothing, String},
+                                     cssFile::Union{Nothing, String},
                                      err_io::IO)
     oldstderr = stderr
     err_pipe = Pipe()
@@ -15,14 +19,14 @@ function mmdc(io::IO, input::String, outputFormat::String,
         "--output", "-",
         "--outputFormat", outputFormat,
         "--theme", theme,
+        "--backgroundColor", backgroundColor,
         "--width", string(width),
         "--height", string(height),
         "--svgId", svgId,
     ]
-    if haskey(ENV, "CI")
-        puppeteerConfigFile = normpath(@__DIR__, "puppeteer-config.json")
-        push!(mmdc_args, "--puppeteerConfigFile", puppeteerConfigFile)
-    end
+    puppeteerConfigFile isa String && push!(mmdc_args, "--puppeteerConfigFile", puppeteerConfigFile)
+    configFile          isa String && push!(mmdc_args, "--configFile", configFile)
+    cssFile             isa String && push!(mmdc_args, "--cssFile", cssFile)
     mmdc_cmd::Cmd = Cmd(["mmdc", mmdc_args...])
     pipe::IO = open(mmdc_cmd, "r+")
     t::Task = @async begin
@@ -45,9 +49,14 @@ end
 
 function mmdc(input::String; outputFormat::String = "svg",
                              theme::String = "default",
+                             backgroundColor::String = "white",
                              width::Int = 800,
                              height::Int = 600,
                              svgId::String = string("svg-", hash(rand())),
+                             puppeteerConfigFile::Union{Nothing, String} =
+                                 ifelse(haskey(ENV, "CI"), normpath(@__DIR__, "puppeteer-config.json"), nothing),
+                             configFile::Union{Nothing, String} = nothing,
+                             cssFile::Union{Nothing, String} = nothing,
                              err_io::IO = stderr)::Union{Nothing, MermaidFile}
     try
         success(`mmdc --version`)
@@ -56,7 +65,7 @@ function mmdc(input::String; outputFormat::String = "svg",
         return nothing
     end
     io = IOBuffer()
-    mmdc(io, input, outputFormat, theme, width, height, svgId, err_io)
+    mmdc(io, input, outputFormat, theme, backgroundColor, width, height, svgId, puppeteerConfigFile, configFile, cssFile, err_io)
     if outputFormat == "png"
         format = MIME("image/png")
     elseif outputFormat == "pdf"
